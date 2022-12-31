@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% set active_page = 'camera' %}
+
+
+{% block content %}
+
+    <div class="mx-auto flex items-center justify-center w-full">
+        <img src="{{ url_for('feed') }}" >
+    </div>
+
+{% endblock %}
