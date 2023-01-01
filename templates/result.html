@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% set active_page = page %}
+
+
+{% block content %}
+
+    {% if page == 'video' %}
+        <div class="mx-auto flex items-center justify-center w-full">
+            <img src="{{ url_for('feed', source=file_name) }}">
+        </div>
+    {% else %}
+        <div class="mx-auto flex items-center justify-center w-full">
+            <img src="{{ url_for('detect', filename=file_name) }}">
+        </div>
+    {% endif %}
+
+{% endblock %}
