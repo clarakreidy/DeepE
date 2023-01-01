@@ -1,11 +1,10 @@
 import os
-import sys
 import uuid
 
 import requests
 from flask import Flask, render_template, request, redirect, url_for, Response
-from werkzeug.utils import secure_filename
 
+from managers.file_manager import save_file
 from managers.frame_genenrator import generate_frames
 from managers.upload_form import UploadForm
 
@@ -32,14 +31,7 @@ def image():
     if request.method == 'GET':
         return render_template('upload-form.html', file_name='', form=form, page='image')
     if request.method == 'POST':
-        file_name = uuid.uuid4()
-        if form.url.data != '':
-            response = requests.get(form.url.data)
-            extension = form.url.data.split(".")[-1]
-            open(os.path.join(app.config['UPLOAD_FOLDER'], f'{str(file_name)}.{extension}'), "wb").write(response.content)
-        elif form.file.data != '':
-            file = request.files[form.file.name]
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], f'{str(file_name)}_{file.filename}'))
+        file_name = save_file(form, app.config['UPLOAD_FOLDER'])
     return redirect(url_for('detect'))
 
 
