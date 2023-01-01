@@ -6,6 +6,6 @@ from wtforms.validators import url, Optional
 
 class UploadForm(FlaskForm):
     url = URLField('link', validators=[Optional(), url()])
-    file = FileField('file', validators=[FileAllowed(['jpeg', 'jpg', 'png'], 'Images only.'), Optional()])
+    file = FileField('file', validators=[FileAllowed(['jpeg', 'jpg', 'png', 'mp4']), Optional()])
 
     submit = SubmitField('Upload')

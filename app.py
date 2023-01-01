@@ -1,12 +1,10 @@
-import os
-import uuid
+import sys
 
-import requests
-from flask import Flask, render_template, request, redirect, url_for, Response
+import cv2
+from flask import Flask, render_template, request, Response, make_response
 
-from managers.emotion_detection import analysis
+from managers.emotion_detection import stream, analyze
 from managers.file_manager import save_file
-from managers.frame_genenrator import generate_frames
 from managers.upload_form import UploadForm
 
 app = Flask(__name__)
@@ -24,6 +22,9 @@ def video():
     form = UploadForm()
     if request.method == 'GET':
         return render_template('upload-form.html', file_name='', form=form, page='video')
+    if request.method == 'POST':
+        file_name = save_file(form, app.config['UPLOAD_FOLDER'])
+    return render_template('result.html', file_name=file_name, page='video')
 
 
 @app.route('/image', methods=['GET', 'POST'])
@@ -33,14 +34,21 @@ def image():
         return render_template('upload-form.html', file_name='', form=form, page='image')
     if request.method == 'POST':
         file_name = save_file(form, app.config['UPLOAD_FOLDER'])
-        # demography = detect_emotion(file_name)
-    return render_template('result.html', file_name=file_name)
+    return render_template('result.html', file_name=file_name, page='image')
 
 
-@app.route('/feed', methods=['GET'])
-def feed():
-    # return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-    return Response(analysis(), mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/feed', defaults={'source': 0}, methods=['GET'])
+@app.route('/feed/<source>', methods=['GET'])
+def feed(source):
+    if source is not None and source != 0:
+        source = f"{app.config['UPLOAD_FOLDER']}/{source}"
+    return Response(stream(source), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/detect', methods=['GET'])
+def detect():
+    filename = request.args['filename']
+    return make_response(analyze(filename))
 
 
 @app.route('/camera', methods=['GET'])

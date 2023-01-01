@@ -18,7 +18,11 @@
                         </svg>
                         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400"><span
                                 class="font-semibold">Click to upload</span> or drag and drop</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">PNG or JPG</p>
+                        {% if page == 'image' %}
+                            <p class="text-xs text-gray-500 dark:text-gray-400">PNG or JPG</p>
+                        {% else %}
+                            <p class="text-xs text-gray-500 dark:text-gray-400">MP4</p>
+                        {% endif %}
                     </div>
                     <div class="hidden">
                         {{ form.file(**{"onchange":"upload()"}) }}
@@ -51,9 +55,9 @@
     {% endif %}
 
     <script>
-    function upload() {
-        document.forms[0].requestSubmit()
-    }
+        function upload() {
+            document.forms[0].requestSubmit()
+        }
     </script>
 
 {% endblock %}
