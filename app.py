@@ -1,8 +1,10 @@
+import os
 import sys
-from uuid import UUID
+import uuid
 
 import requests
 from flask import Flask, render_template, request, redirect, url_for, Response
+from werkzeug.utils import secure_filename
 
 from managers.frame_genenrator import generate_frames
 from managers.upload_form import UploadForm
@@ -30,16 +32,15 @@ def image():
     if request.method == 'GET':
         return render_template('upload-form.html', file_name='', form=form, page='image')
     if request.method == 'POST':
-        print(form.validate_on_submit(), file=sys.stderr)
-        if form.validate_on_submit():
-            print('hi', file=sys.stderr)
-            file_name = UUID()
-            if form.data.url is not None:
-                response = requests.get(form.data.url)
-                open(str(file_name), "wb").write(response.content)
-            if form.data.file is not None:
-                open(str(file_name), "wb").write(form.data.file)
-        return redirect(url_for('detect'))
+        file_name = uuid.uuid4()
+        if form.url.data != '':
+            response = requests.get(form.url.data)
+            extension = form.url.data.split(".")[-1]
+            open(os.path.join(app.config['UPLOAD_FOLDER'], f'{str(file_name)}.{extension}'), "wb").write(response.content)
+        elif form.file.data != '':
+            file = request.files[form.file.name]
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], f'{str(file_name)}_{file.filename}'))
+    return redirect(url_for('detect'))
 
 
 @app.route('/feed', methods=['GET'])
