@@ -1,0 +1,12 @@
+version: '3.9'
+services:
+  deep-e:
+    container_name: deepE
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    devices:
+      - "/dev/video0:/dev/video0"
+
